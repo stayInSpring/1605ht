@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="cn.tarena.ht.mapper.ModuleMapper">
+
+<!-- 开启驼峰映射规则后，单表的查询不用resultMap，但是如果是多表的关联查询，设计到关联对象
+的封装，还是得用resultMap来做 -->
+<select id="findAllModule" resultType="Module">
+select * from module_p
+</select>
+	
+</mapper> 

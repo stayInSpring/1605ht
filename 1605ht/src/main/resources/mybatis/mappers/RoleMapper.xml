@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="cn.tarena.ht.mapper.RoleMapper">
+
+<insert id="insert" parameterType="Role">
+insert into role_p (role_id,name,remark,order_no,create_time,update_time)
+values(#{roleId},#{name},#{remark},#{orderNo},#{createTime},#{updateTime})
+</insert>
+
+<!-- 2.根据roleId,向role_module_P插入数据 -->
+<insert id="insertRoleModule" parameterType="map">
+insert into role_module_p (role_id,module_id)values(#{roleId},#{moduleId})
+</insert>
+
+<!-- 3.根据role查询对应有哪些moduleIds -->
+<select id="findModuleIdsByRoleId" parameterType="string" resultType="string">
+select module_id from role_module_p where role_id=#{roleId}
+</select>
+</mapper> 

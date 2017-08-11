@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+<!--数据库的字段：module_id如果在做单表查询时，如果字段满足驼峰映射规则，
+	则不需要配置resultMap这个在Mybatis的核心配置文件里来配置 -->
+<!-- 开启驼峰映射规则,如果开启，则属性设置为true-->
+<settings>
+<setting name="mapUnderscoreToCamelCase" value="true"/>
+</settings>
+
+<!-- 配置包别名，配置完之后，对应包下的类，可以不用写全路径名了，只写类名即可
+注意：配置包别名之后，就不能写全路径，会报错 -->
+<typeAliases>
+<package name="cn.tarena.ht.pojo"/>
+</typeAliases>
+
+
+
+</configuration>

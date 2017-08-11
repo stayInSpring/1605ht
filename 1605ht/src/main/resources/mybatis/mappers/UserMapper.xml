@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="cn.tarena.ht.mapper.UserMapper">
+	
+	<resultMap type="User" id="userRM">
+	
+		<id property="userId" column="user_id"/>
+		<result property="deptId" column="dept_id"/>
+		<result property="username" column="username"/>
+		<result property="password" column="password"/>
+		<result property="state" column="state"/>
+		
+		<!-- 配置和部门的一对一关系 -->
+		<association property="dept" javaType="Dept">
+			<id property="deptId" column="dept_id"></id>
+			<result property="deptName" column="dept_name"/>
+		</association>
+		
+		<!-- 配置用户信息的一对一关系 -->
+		<association property="userInfo" javaType="UserInfo">
+	
+			<id property="userInfoId" column="user_info_id"></id>
+			<result property="name" column="name"/>
+			<result property="cardNo" column="card_no"/>
+			<result property="managerId" column="manager_id"/>
+			<result property="joinDate" column="join_date"/>
+			<result property="salary" column="salary"/>
+			<result property="birthday" column="birthday"/>
+			<result property="gender" column="gender"/>
+			<result property="station" column="station"/>
+			<result property="telephone" column="telephone"/>
+			<result property="userLevel" column="user_level"/>
+			<result property="remark" column="remark"/>
+			<result property="orderNo" column="order_no"/>
+			
+			<!-- 和领导的自关联关系（一对一） -->
+			<association property="manager" javaType="UserInfo">
+				<id property="userInfoId" column="manager_id"></id>
+				<result property="name" column="manager_name"/>
+			</association>
+		</association>
+		<!-- 配置和角色的对多关系 -->
+		<collection property="roles" ofType="Role">
+			<id property="roleId" column="role_id"/>
+			<result property="name" column="name"/>	
+		</collection>
+		<!-- 配置和权限的对多关系 -->
+		<collection property="modules" ofType="Module">
+			<id property="moduleId" column="module_id"></id>
+			<result property="name" column="name"/>
+		</collection>
+	</resultMap>
+<!--1.查询所有用户数据，包括部门，用户信息及领导信息 -->
+<select id="findAllUser" resultMap="userRM">
+select * from user_p left join dept_p on user_p.dept_id=dept_p.dept_id
+left join user_info_p on user_p.user_id=user_info_p.user_info_id left join
+(select user_info_id as manager_id,name as manager_name from user_info_p)manager 
+on user_info_p.manager_id=manager.manager_id
+</select>
+
+<!-- 2.新增用户，插入的是user_p表 -->
+<insert id="insertUser" parameterType="User">
+insert into user_p (user_id,username,password,state,
+dept_id,create_time,update_time)
+
+values(#{userId},#{username},#{password},#{state},
+#{deptId},#{createTime},#{updateTime})
+</insert>
+
+<!-- 3.新增用户信息，插入的是user_info_p表 -->
+<insert id="insertUserInfo" parameterType="UserInfo">
+insert into user_info_p(user_info_id,name,manager_id,card_no,birthday,station,
+remark,salary,join_date,create_time,update_time,telephone)
+values(#{userInfoId},#{name},#{managerId},#{cardNo},#{birthday},#{station},
+#{remark},#{salary},#{joinDate},#{createTime},#{updateTime},#{telephone})
+</insert>
+<!-- 4.根据主键删除user_p -->
+<delete id="deleteUser" parameterType="string">
+delete from user_p where user_id=#{userId}
+</delete>
+
+<!-- 5.根据主键删除user_info_p -->
+<delete id="deleteUserInfo" parameterType="string">
+delete from user_info_p where user_info_id=#{userId}
+</delete>
+
+<!-- 6.根据主键查询用户的角色信息 -->
+<select id="findRoleOfUserId" parameterType="string" resultMap="userRM">
+select * from user_p left join role_user_p on 
+user_p.user_id=role_user_p.user_id 
+left join role_p on role_p.role_id=role_user_p.role_id 
+where user_p.user_id=#{userId}
+</select>
+
+<!-- 7.根据用户名查询用户信息 ，在实际开发里，用户名是唯一的-->
+<select id="findUserByUsername" parameterType="string" resultType="User">
+select * from user_p where username=#{username}
+</select>
+
+<!-- 8.根据用户名，查询对应的权限信息 -->
+<select id="findModulesOfUser" parameterType="string" resultMap="userRM">
+select user_p.user_id,user_p.username,module_p.module_id,module_p.name from user_p left join role_user_p on user_p.user_id=role_user_p.user_id 
+left join role_p on role_p.role_id=role_user_p.role_id left join role_module_p 
+on role_p.role_id=role_module_p.role_id left join module_p on module_p.module_id=
+role_module_p.module_id where username=#{username}
+</select>
+</mapper> 
